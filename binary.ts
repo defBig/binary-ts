@@ -18,7 +18,7 @@ class Square {
     }
 
     move() {
-        this.x++;
+        this.x += window.innerWidth / 60;
     }
 }
 
@@ -50,11 +50,11 @@ class Renderer {
     }
 
     addSquare(type: string) {
+        console.log("Adding square...");
         this.renderingSquares.push(new Square(type));
     }
 
-    loop(time: number) {
-        this.clear();
+    renderSquares() {
         this.renderingSquares.forEach((square, index) => {
             this.ctx.fillRect(square.x, square.y, square.w, square.h);
             square.move();
@@ -62,10 +62,12 @@ class Renderer {
                 this.toBeRemovedQueue.push(index);
             }
         });
+    }
+
+    cleanOutOfBounds() {
         this.toBeRemovedQueue.forEach(index => {
             this.renderingSquares.splice(index)
         });
-        window.requestAnimationFrame(this.loop);
     }
 }
 
@@ -79,4 +81,10 @@ document.onkeydown = (ev: KeyboardEvent) => {
     else if (ev.code == "Enter") renderer.addSquare("small");
 }
 
-window.requestAnimationFrame(renderer.loop);
+function draw() {
+    renderer.clear();
+    renderer.renderSquares();
+    renderer.cleanOutOfBounds();
+    window.requestAnimationFrame(draw);
+}
+draw();
